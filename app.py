@@ -96,10 +96,7 @@ def register():
             return redirect(url_for('register'))
         is_first = User.query.count() == 0
         invite = None
-        if not is_first:
-            if not invite_code:
-                flash('Einladungslink erforderlich')
-                return redirect(url_for('register'))
+        if not is_first and invite_code:
             invite = Invite.query.filter_by(code=invite_code).first()
             if not invite or (not invite.is_group and invite.used):
                 flash('Ungültiger oder bereits benutzter Code')
