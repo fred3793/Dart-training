@@ -6,7 +6,7 @@ from datetime import datetime
 import secrets
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-me')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-me-123')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///dart.db')
 if app.config['SQLALCHEMY_DATABASE_URI'].startswith('postgres://'):
     app.config['SQLALCHEMY_DATABASE_URI'] = app.config['SQLALCHEMY_DATABASE_URI'].replace('postgres://', 'postgresql://', 1)
@@ -88,27 +88,29 @@ def index():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        username = request.form['username'].strip()
-        password = request.form['password']
-        invite_code = request.form.get('invite_code', '').strip()
-        if User.query.filter_by(username=username).first():
-            flash('Name bereits vergeben')
-            return redirect(url_for('register'))
-        is_first = User.query.count() == 0
-        invite = None
-        if not is_first and invite_code:
-            invite = Invite.query.filter_by(code=invite_code).first()
-            if not invite or (not invite.is_group and invite.used):
-                flash('Ungültiger oder bereits benutzter Code')
+        try:
+            username = request.form['username'].strip()
+            password = request.form['password']
+            if not username or not password:
+                flash('Name und Passwort nötig')
                 return redirect(url_for('register'))
-        user = User(username=username, password_hash=generate_password_hash(password), is_admin=is_first)
-        db.session.add(user)
-        if invite and not invite.is_group:
-            invite.used = True
-        db.session.commit()
-        session['user_id'] = user.id
-        flash('Registrierung erfolgreich')
-        return redirect(url_for('index'))
+            if User.query.filter_by(username=username).first():
+                flash('Name bereits vergeben')
+                return redirect(url_for('register'))
+            is_first = User.query.count() == 0
+            user = User(
+                username=username,
+                password_hash=generate_password_hash(password),
+                is_admin=is_first
+            )
+            db.session.add(user)
+            db.session.commit()
+            session['user_id'] = user.id
+            return redirect(url_for('index'))
+        except Exception:
+            db.session.rollback()
+            flash('Fehler bei der Registrierung')
+            return redirect(url_for('register'))
     return render_template('register.html')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -184,3 +186,34 @@ def update_match(match_id):
     p2.points += (p2_legs - p1_legs)
     db.session.commit()
     return redirect(url_for('index'))
+
+@app.route('/create_invite')
+def create_invite():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    user = User.query.get(session['user_id'])
+    if not user.is_admin:
+        return redirect(url_for('index'))
+    is_group = request.args.get('group') == '1'
+    code = secrets.token_urlsafe(8)
+    inv = Invite(code=code, created_by=user.id, is_group=is_group)
+    db.session.add(inv)
+    db.session.commit()
+    link = url_for('register', _external=True) + f'?code={code}'
+    flash(f'Einladungslink: {link}')
+    return redirect(url_for('index'))
+
+@app.route('/set_mode', methods=['POST'])
+def set_mode():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    tournament = Tournament.query.first()
+    tournament.mode = request.form.get('mode', '501')
+    db.session.commit()
+    return redirect(url_for('index'))
+
+with app.app_context():
+    db.create_all()
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
