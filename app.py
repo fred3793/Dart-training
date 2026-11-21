@@ -164,4 +164,26 @@ def generate_schedule():
     flash(f'Spielplan mit {len(rounds)} Runden erstellt')
     return redirect(url_for('index'))
 
-@app.route('/update_match/<int:match_id
+@app.route('/update_match/<int:match_id>', methods=['POST'])
+def update_match(match_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    match = Match.query.get_or_404(match_id)
+    p1_legs = int(request.form.get('p1_legs', 0))
+    p2_legs = int(request.form.get('p2_legs', 0))
+    if p1_legs + p2_legs == 0:
+        return redirect(url_for('index'))
+    if match.finished:
+        p1 = Player.query.get(match.player1_id)
+        p2 = Player.query.get(match.player2_id)
+        p1.points -= (match.p1_legs - match.p2_legs)
+        p2.points -= (match.p2_legs - match.p1_legs)
+    match.p1_legs = p1_legs
+    match.p2_legs = p2_legs
+    match.finished = True
+    p1 = Player.query.get(match.player1_id)
+    p2 = Player.query.get(match.player2_id)
+    p1.points += (p1_legs - p2_legs)
+    p2.points += (p2_legs - p1_legs)
+    db.session.commit()
+    return redirect(url_for('index'))
