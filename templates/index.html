@@ -9,7 +9,7 @@
     <style>
         body {
             background: #0a0e17;
-            color: #f1f5f9;
+            color: #ffffff;
             font-family: 'Inter', system-ui, sans-serif;
             position: relative;
             min-height: 100vh;
@@ -19,46 +19,52 @@
             position: fixed;
             inset: 0;
             background-image: 
-                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='90' fill='none' stroke='%23ffffff' stroke-width='1' opacity='0.04'/%3E%3Ccircle cx='100' cy='100' r='70' fill='none' stroke='%23ffffff' stroke-width='1' opacity='0.04'/%3E%3Ccircle cx='100' cy='100' r='50' fill='none' stroke='%23ffffff' stroke-width='1' opacity='0.04'/%3E%3Ccircle cx='100' cy='100' r='30' fill='none' stroke='%23ffffff' stroke-width='1' opacity='0.04'/%3E%3Ccircle cx='100' cy='100' r='10' fill='%23ffffff' opacity='0.06'/%3E%3C/svg%3E"),
-                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='120' viewBox='0 0 80 120'%3E%3Cpath d='M40 10 L45 40 L70 45 L50 60 L55 90 L40 75 L25 90 L30 60 L10 45 L35 40 Z' fill='%23ffffff' opacity='0.03'/%3E%3C/svg%3E");
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='90' fill='none' stroke='%23ffffff' stroke-width='1' opacity='0.05'/%3E%3Ccircle cx='100' cy='100' r='70' fill='none' stroke='%23ffffff' stroke-width='1' opacity='0.05'/%3E%3Ccircle cx='100' cy='100' r='50' fill='none' stroke='%23ffffff' stroke-width='1' opacity='0.05'/%3E%3Ccircle cx='100' cy='100' r='30' fill='none' stroke='%23ffffff' stroke-width='1' opacity='0.05'/%3E%3Ccircle cx='100' cy='100' r='10' fill='%23ffffff' opacity='0.08'/%3E%3C/svg%3E"),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='120' viewBox='0 0 80 120'%3E%3Cpath d='M40 10 L45 40 L70 45 L50 60 L55 90 L40 75 L25 90 L30 60 L10 45 L35 40 Z' fill='%23ffffff' opacity='0.04'/%3E%3C/svg%3E");
             background-size: 280px, 120px;
             background-position: 10% 20%, 85% 70%;
-            opacity: 0.6;
+            opacity: 0.5;
             pointer-events: none;
             z-index: 0;
         }
         .container { position: relative; z-index: 1; }
         .card {
-            background: rgba(26, 35, 50, 0.85);
-            border: 1px solid #2d3a4f;
+            background: rgba(26, 35, 50, 0.9);
+            border: 1px solid #3f4a5c;
             border-radius: 14px;
             margin-bottom: 1rem;
-            backdrop-filter: blur(4px);
         }
         .card-header {
             background: transparent;
-            border-bottom: 1px solid #2d3a4f;
+            border-bottom: 1px solid #3f4a5c;
             font-weight: 600;
             color: #ffffff;
         }
-        .btn-primary { background: #e11d48; border-color: #e11d48; }
-        .btn-success { background: #059669; border: none; }
-        .points { color: #4ade80; font-weight: 700; }
+        .btn-primary { 
+            background: #374151; 
+            border-color: #4b5563; 
+            color: #ffffff;
+        }
+        .btn-primary:hover { background: #4b5563; }
+        .btn-success { background: #4b5563; border: none; color: #ffffff; }
+        .btn-outline-light { border-color: #6b7280; color: #ffffff; }
+        .points { color: #d1d5db; font-weight: 700; }
         .match-box {
-            background: rgba(12, 18, 34, 0.7);
-            border: 1px solid #2d3a4f;
+            background: rgba(12, 18, 34, 0.8);
+            border: 1px solid #3f4a5c;
             border-radius: 10px;
             padding: 0.75rem 1rem;
             margin-bottom: 0.5rem;
         }
-        h1 { font-weight: 700; color: #ffffff; letter-spacing: -0.5px; }
+        h1 { font-weight: 700; color: #ffffff; }
         .form-control, .form-select {
-            background: #0c1222;
-            border-color: #2d3a4f;
-            color: #f8fafc;
+            background: #111827;
+            border-color: #3f4a5c;
+            color: #ffffff;
         }
-        .form-control::placeholder { color: #94a3b8; }
-        .text-muted { color: #cbd5e1 !important; }
+        .form-control::placeholder { color: #9ca3af; }
+        .list-group-item { color: #ffffff; background: transparent; border-color: #3f4a5c; }
+        .text-muted { color: #d1d5db !important; }
     </style>
 </head>
 <body>
@@ -75,7 +81,7 @@
         <h1 class="mb-0">Dart Turnier</h1>
         <div class="text-end small">
             <div style="color:#ffffff;">{{ user.username }}
-                {% if user.is_admin %}<span class="badge bg-warning text-dark ms-1">Admin</span>{% endif %}
+                {% if user.is_admin %}<span class="badge bg-secondary ms-1">Admin</span>{% endif %}
             </div>
             <a href="{{ url_for('logout') }}" class="btn btn-sm btn-outline-light mt-1">Logout</a>
         </div>
@@ -112,12 +118,12 @@
                 <div class="card-header">Rangliste</div>
                 <ul class="list-group list-group-flush">
                     {% for p in players %}
-                    <li class="list-group-item bg-transparent d-flex justify-content-between border-secondary">
+                    <li class="list-group-item bg-transparent d-flex justify-content-between">
                         {{ p.name }}
                         <span class="points">{{ p.points }}</span>
                     </li>
                     {% else %}
-                    <li class="list-group-item bg-transparent border-0" style="color:#cbd5e1;">Noch keine Spieler</li>
+                    <li class="list-group-item bg-transparent border-0" style="color:#d1d5db;">Noch keine Spieler</li>
                     {% endfor %}
                 </ul>
             </div>
@@ -131,16 +137,16 @@
                     {% for m in matches %}
                         {% if m.round_num != current_round %}
                             {% set current_round = m.round_num %}
-                            <h6 class="mt-3 mb-2" style="color:#fbbf24;">Runde {{ current_round }}</h6>
+                            <h6 class="mt-3 mb-2" style="color:#d1d5db;">Runde {{ current_round }}</h6>
                         {% endif %}
                         <div class="match-box d-flex align-items-center justify-content-between flex-wrap gap-2">
                             <div>
                                 <strong>{{ players|selectattr('id', 'equalto', m.player1_id)|map(attribute='name')|first }}</strong>
-                                <span class="mx-1" style="color:#94a3b8;">–</span>
+                                <span class="mx-1" style="color:#9ca3af;">–</span>
                                 <strong>{{ players|selectattr('id', 'equalto', m.player2_id)|map(attribute='name')|first }}</strong>
                             </div>
                             {% if m.finished %}
-                                <span class="badge bg-success">{{ m.p1_legs }} : {{ m.p2_legs }}</span>
+                                <span class="badge bg-secondary">{{ m.p1_legs }} : {{ m.p2_legs }}</span>
                             {% else %}
                                 <form action="{{ url_for('update_match', match_id=m.id) }}" method="post" class="d-flex align-items-center gap-1">
                                     <input type="number" name="p1_legs" min="0" max="2" value="0" class="form-control form-control-sm" style="width:52px">
@@ -151,7 +157,7 @@
                             {% endif %}
                         </div>
                     {% else %}
-                        <p class="mb-0" style="color:#cbd5e1;">Noch kein Spielplan vorhanden.</p>
+                        <p class="mb-0" style="color:#d1d5db;">Noch kein Spielplan vorhanden.</p>
                     {% endfor %}
                 </div>
             </div>
